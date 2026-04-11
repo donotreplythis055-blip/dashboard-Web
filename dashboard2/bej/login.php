@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 $error = '';
@@ -6,7 +6,7 @@ $username = '';
 
 // Ha már be van jelentkezve
 if (isset($_SESSION['user_id'])) {
-    header('Location: /dashboard2/dashboard/dashboard.php');
+    header('Location: /dashboard2/fd2/fd.php');
     exit;
 }
 
@@ -21,35 +21,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo = new PDO('mysql:host=localhost;dbname=project_db', 'root', '');
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // ✅ ROLE IS LEKÉRVE
-            $stmt = $pdo->prepare('SELECT id, username, password, role FROM users WHERE username = ?');
+            $stmt = $pdo->prepare('SELECT id, username, password, role, is_verified FROM users WHERE username = ?');
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($password, $user['password'])) {
 
-    if (!$user['is_verified']) {
-        $error = "Erősítsd meg az emailed!";
-    } else {
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['email'];
+                if (!$user['is_verified']) {
+                    $error = "Erősítsd meg az emailed!";
+                } else {
+                    session_regenerate_id(true);
 
-        header('Location: dashboard.php');
-        exit;
-    }
-}
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['role'] = $user['role'];
 
-                // ✅ SESSION ADATOK
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role']; // 🔥 EZ HIÁNYZOTT
+                    header('Location: /dashboard2/fd2/fd.php');
+                    exit;
+                }
 
-                header('Location: /dashboard2/fd2/fd.php');
-                exit;
             } else {
                 $error = 'Hibás felhasználónév vagy jelszó.';
             }
+
         } catch (PDOException $e) {
             $error = 'Adatbázis hiba. Próbálja meg később.';
         }
@@ -75,29 +69,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="auth-header">
                 <p class="eyebrow">Üdv újra</p>
                 <h1>Bejelentkezés</h1>
-                <p class="subtext">Lépjen be a fiókjába, hogy elérje a dashboardot.</p>
+                <p class="subtext">Lépjen be a fiókjába.</p>
             </div>
 
             <?php if ($error): ?>
                 <div class="message error"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
 
-            <form method="POST" class="auth-form" novalidate>
+            <form method="POST" class="auth-form">
                 <label>
-                    <span class="label-text">Felhasználónév</span>
-                    <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" placeholder="Felhasználónév" required>
+                    <span>Felhasználónév</span>
+                    <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" required>
                 </label>
+
                 <label>
-                    <span class="label-text">Jelszó</span>
-                    <input type="password" name="password" placeholder="Jelszó" required>
+                    <span>Jelszó</span>
+                    <input type="password" name="password" required>
                 </label>
-                <button type="submit" class="button-primary">Bejelentkezés</button>
+
+                <button type="submit">Bejelentkezés</button>
             </form>
 
-            <div class="auth-footer">
-                <p>Még nincs fiókja?</p>
-                <a class="button-secondary" href="/dashboard2/reg/create_user.php">Regisztráció</a>
-            </div>
+            <p>Nincs fiók?</p>
+            <a href="/dashboard2/reg/create_user.php">Regisztráció</a>
         </main>
     </div>
 </body>
