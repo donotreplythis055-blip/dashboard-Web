@@ -10,9 +10,12 @@ use PHPMailer\PHPMailer\Exception;
 
 $msg = '';
 
-// ⚠️ EZ MÉG NEM FOG MENNI RENDEREN → majd cseréljük
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=project_db', 'root', '');
+    $pdo = new PDO(
+        "pgsql:host=dpg-d7cqqn7lk1mc73ebedug-a;port=5432;dbname=dashboard_db_x12n",
+        "dashboard_db_x12n_user",
+        "5OiwanCxna3FJaYiIvdiV80yy7dnD3UT"
+    );
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     $msg = "Adatbázis hiba!";
@@ -27,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $msg = "Hiányzó adatok!";
     } else {
 
-        // email ellenőrzés
         $check = $pdo->prepare("SELECT id FROM users WHERE email=?");
         $check->execute([$email]);
 
@@ -39,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $stmt = $pdo->prepare("
                 INSERT INTO users (username, email, password, verification_code, is_verified) 
-                VALUES (?, ?, ?, ?, 0)
+                VALUES (?, ?, ?, ?, FALSE)
             ");
 
             $stmt->execute([
@@ -57,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-                $mail->Username = 'TE_EMAIL@gmail.com'; // IDE ÍRD A SAJÁTOD
-                $mail->Password = 'APP_PASSWORD';       // IDE AZ APP PASSWORD
+                $mail->Username = 'TE_EMAIL@gmail.com';
+                $mail->Password = 'APP_PASSWORD';
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 
@@ -66,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->addAddress($email);
 
                 $mail->Subject = 'Megerősítő kód';
-                $mail->Body = "A megerősítő kódod: $code";
+                $mail->Body = "A kódod: $code";
 
                 $mail->send();
 
@@ -85,8 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regisztráció</title>
-    <link rel="stylesheet" href="reg.css">
+    <link rel="stylesheet" href="/dashboard2/reg/reg.css">
 </head>
 <body>
 
@@ -102,6 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($msg): ?>
         <p><?php echo htmlspecialchars($msg); ?></p>
     <?php endif; ?>
+
+    <p>Van már fiókod?</p>
+    <a href="/dashboard2/bej/login.php">Bejelentkezés</a>
 </div>
 
 </body>
