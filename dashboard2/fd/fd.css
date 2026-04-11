@@ -1,0 +1,64 @@
+/* ------------------ Alap ------------------ */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ------------------ Konténer ------------------ */
+.main-container {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* ------------------ Cím ------------------ */
+.main-container h1 {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* ------------------ Gombok ------------------ */
+.main-container a {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+
+    transition: 0.2s;
+}
+
+/* Login gomb */
+.login-btn {
+    background: #6c5ce7;
+}
+
+.login-btn:hover {
+    background: #574fc5;
+}
+
+/* Reg gomb */
+.reg-btn {
+    background: #00b894;
+}
+
+.reg-btn:hover {
+    background: #00997a;
+}
