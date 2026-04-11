@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// 📦 PHPMailer betöltés (FIGYELJ AZ ÚTVONALRA!)
 require __DIR__ . '/../phpmailer/src/PHPMailer.php';
 require __DIR__ . '/../phpmailer/src/SMTP.php';
 require __DIR__ . '/../phpmailer/src/Exception.php';
@@ -9,11 +8,15 @@ require __DIR__ . '/../phpmailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// 🛢️ adatbázis
-$pdo = new PDO('mysql:host=localhost;dbname=project_db', 'root', '');
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
 $msg = '';
+
+// ⚠️ EZ MÉG NEM FOG MENNI RENDEREN → majd cseréljük
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=project_db', 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    $msg = "Adatbázis hiba!";
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $msg = "Hiányzó adatok!";
     } else {
 
-        // 🔍 ellenőrzés (email már létezik?)
+        // email ellenőrzés
         $check = $pdo->prepare("SELECT id FROM users WHERE email=?");
         $check->execute([$email]);
 
@@ -32,17 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = "Ez az email már regisztrálva van!";
         } else {
 
-            // 🔐 kód generálás
             $code = rand(100000, 999999);
 
-            // 💾 mentés (email = username)
             $stmt = $pdo->prepare("
                 INSERT INTO users (username, email, password, verification_code, is_verified) 
                 VALUES (?, ?, ?, ?, 0)
             ");
 
             $stmt->execute([
-                $email, // username
+                $email,
                 $email,
                 password_hash($password, PASSWORD_DEFAULT),
                 $code
@@ -50,17 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $_SESSION['verify_email'] = $email;
 
-            // 📧 EMAIL KÜLDÉS
             $mail = new PHPMailer(true);
 
             try {
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-
-                $mail->Username = ''; // ❗ ide a saját gmail
-                $mail->Password = '';       // ❗ ide az app password
-
+                $mail->Username = 'TE_EMAIL@gmail.com'; // IDE ÍRD A SAJÁTOD
+                $mail->Password = 'APP_PASSWORD';       // IDE AZ APP PASSWORD
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 
@@ -72,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $mail->send();
 
-                // 👉 átirányítás verify oldalra
                 header("Location: verify.php");
                 exit;
 
@@ -96,15 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <h1>Regisztráció</h1>
 
-    <form method="POST" class="form">
+    <form method="POST">
         <input type="email" name="email" placeholder="Email cím" required>
         <input type="password" name="password" placeholder="Jelszó" required>
-
         <button type="submit">Regisztráció</button>
     </form>
 
     <?php if ($msg): ?>
-        <p class="message"><?php echo htmlspecialchars($msg); ?></p>
+        <p><?php echo htmlspecialchars($msg); ?></p>
     <?php endif; ?>
 </div>
 
