@@ -1,0 +1,62 @@
+/* ------------------ Alap ------------------ */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ------------------ Konténer ------------------ */
+.info-container {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* ------------------ Cím ------------------ */
+.info-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ------------------ Info box ------------------ */
+.info-box {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.info-box p {
+    margin: 10px 0;
+    font-size: 15px;
+    color: #444;
+}
+
+/* ------------------ Gomb ------------------ */
+.back-btn {
+    display: block;
+    padding: 12px;
+
+    text-decoration: none;
+    text-align: center;
+    color: white;
+
+    background: #43cea2;
+    border-radius: 8px;
+
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    background: #2a9d8f;
+}
