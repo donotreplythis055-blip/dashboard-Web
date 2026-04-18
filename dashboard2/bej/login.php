@@ -1,5 +1,6 @@
 <?php
 session_start();
+require __DIR__ . '/../db.php';
 require_once __DIR__ . '/../config.php';
 
 $error = '';
